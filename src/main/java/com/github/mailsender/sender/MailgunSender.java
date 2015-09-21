@@ -1,33 +1,39 @@
 package com.github.mailsender.sender;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.sun.jersey.api.client.ClientHandlerException;
+import com.github.mailsender.sender.model.MailRequest;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 @Component
 class MailgunSender implements MailSender {
 
+	private static final Logger LOG = Logger.getLogger(MailgunSender.class);
+
+	private final WebResource mailgunPusher;
+
 	@Autowired
-	private WebResource mailGunSender;
+	public MailgunSender(WebResource mailgunPusher) {
+		this.mailgunPusher = mailgunPusher;
+	}
 
 	@Override
-	public Response send(MailRequest request) {
+	public boolean send(MailRequest request) {
 		MultivaluedMapImpl data = makeData(request);
-		Response response = Response.DEFAULT_UNSUCCESSFUL_RESPONSE;
 		try {
-			ClientResponse clientResponse = mailGunSender.post(ClientResponse.class, data);
-			String output = clientResponse.getEntity(String.class);
-			response = new Response(clientResponse.getStatus(), output);
-		} catch (UniformInterfaceException | ClientHandlerException e) {
-			// TODO add logging...
+			LOG.debug("Mailgun: sending " + request);
+			ClientResponse clientResponse = mailgunPusher.post(ClientResponse.class, data);
+			LOG.debug("Mailgun: response " + clientResponse.getEntity(String.class));
+			return clientResponse.getStatus() == HttpStatus.OK.value();
+		} catch (Exception e) {
+			LOG.error("Mailgun: error while sending.", e);
+			return false;
 		}
-
-		return response;
 	}
 
 	private MultivaluedMapImpl makeData(MailRequest request) {

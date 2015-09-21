@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.github.mailsender.sender.model.MailRequest;
+import com.github.mailsender.sender.model.MailResponse;
+
 @Component
 public class DelegatingMailSender {
 
@@ -15,14 +18,18 @@ public class DelegatingMailSender {
 		this.delegates = delegates;
 	}
 
-	public Response sendMail(MailRequest request) {
-		Response response = Response.DEFAULT_UNSUCCESSFUL_RESPONSE;
+	public MailResponse sendMail(MailRequest request) {
+		boolean isSuccessful = false;
 		for (MailSender delegate : delegates) {
-			response = delegate.send(request);
-			if (response.isSuccess())
+			isSuccessful = delegate.send(request);
+			if (isSuccessful)
 				break;
 		}
-		return response;
+
+		if (isSuccessful)
+			return MailResponse.SUCCESSFUL;
+		else
+			return MailResponse.UNSUCCESSFUL;
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.github.mailsender.sender;
 
+import com.github.mailsender.sender.model.MailRequest;
+
 public interface MailSender {
-	Response send(MailRequest request);
+	boolean send(MailRequest request);
 }

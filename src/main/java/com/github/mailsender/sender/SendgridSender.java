@@ -1,30 +1,38 @@
 package com.github.mailsender.sender;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.github.mailsender.sender.model.MailRequest;
 import com.sendgrid.SendGrid;
 import com.sendgrid.SendGrid.Email;
-import com.sendgrid.SendGridException;
 
 @Component
-class SendgridSender implements MailSender {
+class SendgridSender implements MailSender{
+
+	private static final Logger LOG = Logger.getLogger(SendgridSender.class);
+
+	private final SendGrid sendgridPusher;
 
 	@Autowired
-	private SendGrid sendGridSender;
+	public SendgridSender(SendGrid sendgridPusher) {
+		this.sendgridPusher = sendgridPusher;
+	}
 
 	@Override
-	public Response send(MailRequest request) {
+	public boolean send(MailRequest request) {
 
 		Email email = makeEmail(request);
-		Response response = Response.DEFAULT_UNSUCCESSFUL_RESPONSE;
 		try {
-			SendGrid.Response sgResponse = sendGridSender.send(email);
-			response = new Response(sgResponse.getCode(), sgResponse.getMessage());
-		} catch (SendGridException e) {
-			// TODO add logging...
+			LOG.debug("SendGrid: sending " + request);
+			SendGrid.Response response = sendgridPusher.send(email);
+			LOG.debug("SendGrid: response " + response.getMessage());
+			return response.getStatus();
+		} catch (Exception e) {
+			LOG.error("SendGrid: error while sending.", e);
+			return false;
 		}
-		return response;
 	}
 
 	private Email makeEmail(MailRequest request) {

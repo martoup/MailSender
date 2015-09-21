@@ -17,9 +17,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  * @author Martin Nikolov
  *
  */
-@ComponentScan
+@ComponentScan(basePackages = {"com.github.mailsender" })
 @EnableWebMvc
-class Application implements WebApplicationInitializer {
+public class Application implements WebApplicationInitializer {
 
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();

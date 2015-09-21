@@ -1,8 +1,11 @@
+.git
+# Eclipse folders #
 .classpath
 .project
-.git
 .settings/
+
 target/
+logs/
 *.class
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

@@ -1,87 +1,91 @@
 package com.github.mailsender.utils;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import com.github.mailsender.sender.model.MailRequest;
 
-import com.github.mailsender.sender.MailRequest;
-
-@Component
 public class RequestValidator {
 
-	@Value("${maxSubjectLength}")
-	private int maxSubjectLength;
+	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-	@Value("${maxRecipients}")
-	private int maxRecipients;
+	private final int maxSubjectLength;
+
+	private final int maxRecipients;
+
+	private final Pattern pattern;
+
+	public RequestValidator(int maxRecipients, int maxSubjectLength) {
+		this.maxSubjectLength = maxSubjectLength;
+		this.maxRecipients = maxRecipients;
+		pattern = Pattern.compile(EMAIL_PATTERN);
+	}
 
 	public void validateRequest(MailRequest request) {
 		validateTo(request.getTo());
 		validateNonRequieredEmailFileds(request.getCc());
 		validateNonRequieredEmailFileds(request.getBcc());
-		
+
 		int totalRecipients = request.getTo().size() + request.getBcc().size() + request.getCc().size();
 		validateRecipientsLimit(totalRecipients);
-		
+
 		validateFrom(request.getFrom());
 
-		vaildateContent(request.getContent());
-		vaildateSubject(request.getSubject());
+		validateSubject(request.getSubject());
+		validateContent(request.getContent());
 	}
 
-	private void validateRecipientsLimit(int recipitens) {
+	void validateRecipientsLimit(int recipitens) {
 		if (recipitens > maxRecipients)
 			throw new IllegalArgumentException("Can not send to more than " + maxRecipients + " recipients.");
 	}
-	
-	private void validateTo(List<String> tos)
-	{
-		if(tos == null)
-			throw new IllegalArgumentException("Invalid To field.");
-		if(tos.size() == 0)
-			throw new IllegalArgumentException("To can not be empty.");
-		for(String to : tos)
-			validateEMailAddress(to);
+
+	void validateTo(List<String> tos) {
+		if (tos == null)
+			throw new IllegalArgumentException("Missing 'to' field.");
+		if (tos.size() == 0)
+			throw new IllegalArgumentException("Field 'to' can not be empty.");
+		for (String to : tos)
+			validateEmailAddress(to);
 	}
-	
-	private void validateFrom(String from)
-	{
-		if(from == null)
-			throw new IllegalArgumentException("Invalid From field.");
-		if(from.length() == 0)
-			throw new IllegalArgumentException("From can not be empty.");
-		validateEMailAddress(from);
+
+	void validateFrom(String from) {
+		if (from == null)
+			throw new IllegalArgumentException("Missing 'from' field.");
+		if (from.length() == 0)
+			throw new IllegalArgumentException("Field 'from' can not be empty.");
+		validateEmailAddress(from);
 	}
-	
-	private void validateNonRequieredEmailFileds(List<String> mailAddresses)
-	{
-		if(mailAddresses == null)
+
+	void validateNonRequieredEmailFileds(List<String> mailAddresses) {
+		if (mailAddresses == null)
 			throw new IllegalArgumentException("Invalid recipients field.");
-		for(String address : mailAddresses)
-			validateEMailAddress(address);
+		for (String address : mailAddresses)
+			validateEmailAddress(address);
 	}
 
-	private void validateEMailAddress(String address) {
-		// TODO Implement this
-		
+	void validateEmailAddress(String address) {
+		Matcher matcher = pattern.matcher(address);
+		if (!matcher.matches())
+			throw new IllegalArgumentException("Invalid Email: " + address);
 	}
 
-	// TODO Export string to properties file:
-	private void vaildateSubject(String subject) {
+	void validateSubject(String subject) {
 		if (subject == null)
-			throw new IllegalArgumentException("Invalid subject.");
+			throw new IllegalArgumentException("Missing 'subject' field.");
 		if (subject.length() == 0)
-			throw new IllegalArgumentException("Subject can not be empty.");
+			throw new IllegalArgumentException("Field 'subject' can not be empty.");
 		if (subject.length() > maxSubjectLength)
-			throw new IllegalArgumentException("Subject can not be longer than " + maxSubjectLength + " characters.");
+			throw new IllegalArgumentException(
+					"The subject can not be longer than " + maxSubjectLength + " characters.");
 	}
 
-	private void vaildateContent(String content) {
+	void validateContent(String content) {
 		if (content == null)
-			throw new IllegalArgumentException("Invalid content.");
+			throw new IllegalArgumentException("Missing `content` field.");
 		if (content.length() == 0)
-			throw new IllegalArgumentException("Subject can not be empty.");
+			throw new IllegalArgumentException("Field `content` can not be empty.");
 	}
-
 }
