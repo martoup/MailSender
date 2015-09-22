@@ -18,7 +18,7 @@ You can see live demo here: [Click Me](http://martoup-mailsender.herokuapp.com/s
   
   If you click on Model
 
-![SwaggerUI Model](https://cloud.githubusercontent.com/assets/1436511/10031001/56faaeac-6183-11e5-80dc-cc160a725efa.PNG)
+  ![SwaggerUI Model](https://cloud.githubusercontent.com/assets/1436511/10031001/56faaeac-6183-11e5-80dc-cc160a725efa.PNG)
   
 You will see more info about the JSON request schema - which fields are optional and which are required.
   
