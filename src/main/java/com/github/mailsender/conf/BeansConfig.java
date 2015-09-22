@@ -20,7 +20,7 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
  *
  */
 @Configuration
-@PropertySource(value = { "classpath:authentication.properties", "classpath:validation.properties" })
+@PropertySource(value = { "classpath:authentication.properties", "classpath:validation.properties", "classpath:api-info.properties" })
 class BeansConfig {
 
 	@Bean

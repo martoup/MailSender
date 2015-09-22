@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mailsender.sender.model.MailRequest;
 import com.github.mailsender.sender.model.MandrillMessage;
@@ -73,13 +72,6 @@ public class MandrillSender implements MailSender {
 	}
 
 	private boolean isMessageSent(String response) {
-		try {
-			Map<String, String> data = objectMapper.readValue(response, new TypeReference<HashMap<String, String>>() {
-			});
-			return "sent".equals(data.get("status"));
-		} catch (Exception e) {
-			LOG.error("Mandrill: error while deserializing: " + response, e);
-			return false;
-		}
+		return !response.contains("error");
 	}
 }
