@@ -10,23 +10,8 @@
 		</layout>
 	</appender>
 
-	<appender name="FileAppender" class="org.apache.log4j.FileAppender">
-		<param name="file" value="logs/mailsender.log" />
-		<param name="encoding" value="UTF-8" />
-		<param name="append" value="true" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="conversionPattern" value="%d%t %c %m%n" />
-		</layout>
-	</appender>
-
-	<category name="com.github.mailsender" additivity="false">
-		<level value="debug"/>
-		<!-- For debugging purposes: 
-		<appender-ref ref="console" />-->
-		<appender-ref ref="FileAppender" />
-	</category>
 	<root>
 		<level value="error" />
-		<appender-ref ref="FileAppender" />
+		<appender-ref ref="console" />
 	</root>
 </log4j:configuration>
