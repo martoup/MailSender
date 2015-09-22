@@ -27,17 +27,17 @@ You will see more info about the JSON request schema - which fields are optional
 Here is an example Request JSON
 ```
 {
-  "to": [ //Required field, must be a valid email.
+  "to": [ //Required field, must be a valid list of emails.
     "test1@email.com",
     "test2@email.com"
   ],
-  "subject": "Test Subject", //Required field, must be non-empty string
-  "content": "Test Content", //Required field, must be non-empty string
+  "subject": "Test Subject", //Required field, must be non-empty string.
+  "content": "Test Content", //Required field, must be non-empty string.
   "from": "test3@email.com", //Required field, must be a valid email.
-  "bcc": [ //Optional field, must be a valid email.
+  "bcc": [ //Optional field, must be a valid list of emails.
     "test4@email.com"
   ],
-  "cc": [ //Optional field, must be a valid email
+  "cc": [ //Optional field, must be a valid list of emails.
     "test5@email.com",
     "test6@email.com"
   ]
